@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">QPIDroid</string>
+    <string name="action_settings">Connection</string>
+
+    <string name="server_address">Server Address</string>
+    <string name="server_port">Server Port</string>
+    <string name="exchange">Exchange</string>
+    <string name="subject">Subject</string>
+
+</resources>
