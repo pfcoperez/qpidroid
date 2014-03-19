@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.orionsword.qpidroid.ServerConnection$PlaceholderFragment">
+    tools:context="com.orionsword.qpidroid.ServerConnection">
 
 
     <LinearLayout
@@ -49,6 +49,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/server_port"
+                    android:inputType="number"
                     />
 
                 <EditText
@@ -68,51 +69,39 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:weightSum="1.0">
-
-            <LinearLayout
-                android:layout_width="0dip"
-                android:layout_weight=".4"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/exchange"/>
-                <EditText
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    />
-                </LinearLayout>
-
-            <LinearLayout
-                android:layout_weight=".6"
-                android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/subject"
-                />
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:maxLength="100"/>
-            </LinearLayout>
-
-
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subject"
+            />
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="100"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exchange"/>
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Start Server"
+            android:id="@+id/startServerButton"
+            android:onClick="onStartClick"
             />
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Stop Server"
-            />
-    </LinearLayout>
+            android:id="@+id/stopServerButton"
+            android:onClick="onStopClick"
+           />
+</LinearLayout>
 
 </RelativeLayout>

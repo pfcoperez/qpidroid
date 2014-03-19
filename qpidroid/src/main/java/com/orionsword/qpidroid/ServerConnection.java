@@ -1,5 +1,13 @@
 package com.orionsword.qpidroid;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -10,8 +18,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Toast;
 
 public class ServerConnection extends ActionBarActivity {
+
+    Intent intent;
+
+    public ServerConnection() {
+        intent = new Intent();
+        intent.setAction("com.orionsword.qpidroid.SUBSCRIBE");
+
+        msgHandler = new ServerConnectionAppMsgHandler(this);
+        fromService = new Messenger(msgHandler);
+        ser_con = new QPIDServiceCon();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +66,52 @@ public class ServerConnection extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //CALLBACKS:
+    public void onStartClick(View view)
+    {
+        //Starts the service
+        startService(intent);
+        //Bind to it
+        isBound = bindService(intent, ser_con, Context.BIND_AUTO_CREATE);
+        System.out.println("isBound" + Boolean.toString(isBound));
+        return;
+        /*if(!isBound)
+        {
+            Toast.makeText(this, "Problem found trying to bind to service!", Toast.LENGTH_SHORT);
+            return;
+        }
+        System.out.println("is null toService?" + Boolean.toString(toService == null));
+        Bundle rqData = new Bundle();
+        Message msg2service = Message.obtain();
+        msg2service.replyTo = fromService; //"fromservice" is my message receiver
+        msg2service.setData(rqData);
+        try {
+            toService.send(msg2service);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Could not send the message!", Toast.LENGTH_SHORT);
+            return;
+        }*/
+    }
+
+    public void onStopClick(View view)
+    {
+        System.out.println("onStopClick!");
+        unbindService(ser_con);
+        isBound = false;
+        stopService(intent);
+    }
+    //CALLBACKS END
+
+    public void messageReceived(Bundle msgInfo)
+    {
+        String textToToast = msgInfo.getString("toToast");
+        if(textToToast != null)
+        {
+            Toast.makeText(this, textToToast, Toast.LENGTH_SHORT);
+        }
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -60,6 +126,26 @@ public class ServerConnection extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_server_connection, container, false);
             return rootView;
         }
+
+
     }
 
+    protected class QPIDServiceCon implements ServiceConnection {
+
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            toService = new Messenger(iBinder);
+            System.out.println("Finished onServiceConnected!");
+        }
+
+        public void onServiceDisconnected(ComponentName componentName) {
+            toService = null;
+        }
+
+    }
+
+    protected ServerConnectionAppMsgHandler msgHandler;
+    protected Messenger fromService;
+    protected Messenger toService;
+    protected QPIDServiceCon ser_con;
+    protected boolean isBound = false;
 }

@@ -9,4 +9,6 @@
     <string name="exchange">Exchange</string>
     <string name="subject">Subject</string>
 
+    <string name="serviceName">com.orionsword.qpidListener</string>
+
 </resources>
