@@ -74,24 +74,11 @@ public class ServerConnection extends ActionBarActivity {
         //Bind to it
         isBound = bindService(intent, ser_con, Context.BIND_AUTO_CREATE);
         System.out.println("isBound" + Boolean.toString(isBound));
-        return;
-        /*if(!isBound)
+        if(!isBound)
         {
             Toast.makeText(this, "Problem found trying to bind to service!", Toast.LENGTH_SHORT);
             return;
         }
-        System.out.println("is null toService?" + Boolean.toString(toService == null));
-        Bundle rqData = new Bundle();
-        Message msg2service = Message.obtain();
-        msg2service.replyTo = fromService; //"fromservice" is my message receiver
-        msg2service.setData(rqData);
-        try {
-            toService.send(msg2service);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Could not send the message!", Toast.LENGTH_SHORT);
-            return;
-        }*/
     }
 
     public void onStopClick(View view)
@@ -108,7 +95,8 @@ public class ServerConnection extends ActionBarActivity {
         String textToToast = msgInfo.getString("toToast");
         if(textToToast != null)
         {
-            Toast.makeText(this, textToToast, Toast.LENGTH_SHORT);
+            Toast.makeText(this, textToToast, Toast.LENGTH_SHORT).show();
+            System.out.println("Client received: " + textToToast);
         }
     }
 
@@ -134,7 +122,22 @@ public class ServerConnection extends ActionBarActivity {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             toService = new Messenger(iBinder);
-            System.out.println("Finished onServiceConnected!");
+            if(!isBound) return;
+            System.out.println("is null toService?" + Boolean.toString(toService == null));
+            Bundle rqData = new Bundle();
+            rqData.putString("dummyField", "noval");
+            Message msg2service = Message.obtain();
+            msg2service.replyTo = fromService; //"fromservice" is my message receiver
+            msg2service.setData(rqData);
+            try {
+                System.out.println("Before sending the message\t\ttoService:\t" + toService.toString());
+                toService.send(msg2service);
+                System.out.println("Finished onServiceConnected!");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                System.out.println("Could not send the message!");
+                return;
+            }
         }
 
         public void onServiceDisconnected(ComponentName componentName) {

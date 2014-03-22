@@ -27,7 +27,7 @@ public class QpidroidProcess extends Service {
         msgHandler = new FromClientHandler();
         toMe = new Messenger(msgHandler);
         toClient = null;
-        messageSimulator = new Timer();
+        messageSimulator = new Timer(true);
     }
 
     /*
@@ -40,7 +40,9 @@ public class QpidroidProcess extends Service {
     {
         //System.out.println("Service: onBind");
         doToast("Service: onBind");
-        return toMe.getBinder();
+        IBinder ret = toMe.getBinder();
+        if(ret == null) doToast("SERVICE.onBind: To me binder is NULL!");
+        return ret;
     }
 
     @Override
@@ -67,9 +69,10 @@ public class QpidroidProcess extends Service {
     @Override
     public void onDestroy() {
         doToast("Destroy service!");
-        messageSimulator.cancel();
+        if(messageSimulator != null) {
+            messageSimulator.cancel();
+        }
         messageSimulator = null;
-
         msgHandler = null;
         super.onDestroy();
     }
@@ -77,6 +80,7 @@ public class QpidroidProcess extends Service {
     protected void qpidMessageReceived(String msg)
     {
         if(toClient == null) return; //Who should I notify?
+        //doToast("PREV qpidMessageReceived OK!");
         Bundle msgPack = new Bundle();
         msgPack.putString("toToast", msg);
         Message m =  Message.obtain();
@@ -99,9 +103,15 @@ public class QpidroidProcess extends Service {
         @Override
         public void handleMessage(Message msg) {
             toClient = msg.replyTo;
+            qpidMessageReceived("test no thread");
             //I wont answer from the moment, just keep the target (toClient) to sent messages to display
-            //Bundle answer = new Bundle(); //Key-Map object used to pass objects.
-            //answer.putString("description", ); //key, val
+            /*Bundle answer = new Bundle(); //Key-Map object used to pass objects.
+            answer.putString("description", "kk"); //key,val
+            Message reply = Message.obtain();
+            reply.setData(answer);
+            try {
+
+            } catch(Exception)*/
         }
     }
 
@@ -113,5 +123,5 @@ public class QpidroidProcess extends Service {
     {
         doToast(msg, this);
     }
-    private void doToast(String msg, Context con) { Toast.makeText(con,msg,Toast.LENGTH_SHORT).show(); }
+    private void doToast(String msg, Context con) { Toast.makeText(con,"SERVICE SAYS: " + msg,Toast.LENGTH_SHORT).show(); }
 }
