@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    buildToolsVersion '19.0.0'
 
     defaultConfig {
         minSdkVersion 11
@@ -32,4 +32,8 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
+    compile files('lib/geronimo-jms_1.1_spec-1.0.jar')
+    compile files('lib/qpid-client-0.24.jar')
+    compile files('lib/qpid-common-0.24.jar')
+    compile files('lib/slf4j-api-1.6.4.jar')
 }
