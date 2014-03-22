@@ -12,9 +12,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.widget.Toast;
 
+import com.orionsword.qpid.QPIDManager;
+
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by pablo on 31/12/13.
@@ -27,7 +27,6 @@ public class QpidroidProcess extends Service {
         msgHandler = new FromClientHandler();
         toMe = new Messenger(msgHandler);
         toClient = null;
-        messageSimulator = new Timer(true);
     }
 
     /*
@@ -56,31 +55,22 @@ public class QpidroidProcess extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //System.out.println("Service: onStartCommand");
         doToast("Service: onStartCommand");
-        messageSimulator.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                String shownText = "Message received!! on " + (new Date(System.currentTimeMillis())).toString();
-                qpidMessageReceived(shownText);
-            }
-        }, 5000, 5000);
+        //START LISTENING
+        initBusinessListener();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         doToast("Destroy service!");
-        if(messageSimulator != null) {
-            messageSimulator.cancel();
-        }
-        messageSimulator = null;
+        stopBusinessListener();;
         msgHandler = null;
         super.onDestroy();
     }
 
-    protected void qpidMessageReceived(String msg)
+    protected void businessMessageReceived(String msg)
     {
         if(toClient == null) return; //Who should I notify?
-        //doToast("PREV qpidMessageReceived OK!");
         Bundle msgPack = new Bundle();
         msgPack.putString("toToast", msg);
         Message m =  Message.obtain();
@@ -93,32 +83,33 @@ public class QpidroidProcess extends Service {
         }
     }
 
+    protected void initBusinessListener()
+    {
+        //businessMgr = new QPIDManager
+    }
 
-    //
+    protected void stopBusinessListener()
+    {
+        if(businessMgr != null)
+            businessMgr.killAllThreads();
+        businessMgr = null;
+    }
+
     protected Messenger toClient;
     protected Messenger toMe;
     protected FromClientHandler msgHandler;
+    protected QPIDManager businessMgr;
 
     protected class FromClientHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             toClient = msg.replyTo;
-            qpidMessageReceived("test no thread");
-            //I wont answer from the moment, just keep the target (toClient) to sent messages to display
-            /*Bundle answer = new Bundle(); //Key-Map object used to pass objects.
-            answer.putString("description", "kk"); //key,val
-            Message reply = Message.obtain();
-            reply.setData(answer);
-            try {
-
-            } catch(Exception)*/
+             businessMessageReceived("Started listening!");
         }
     }
 
 
     //
-
-    private Timer messageSimulator;
     private void doToast(String msg)
     {
         doToast(msg, this);
