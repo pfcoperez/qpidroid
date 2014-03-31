@@ -49,7 +49,7 @@ public class QPIDManager {
 
     public QPIDManager(String exchange, String subject, String ipUrl, int tcpPort, String user, String password) {
         log = new QPIDLogger();
-        receivers = new HashMap<>();
+        receivers = new HashMap<String, MessageConsumer>();
         try {
             String connectionString = "amqp://" + (user==null?defaultUser:user) +
                     ":" +

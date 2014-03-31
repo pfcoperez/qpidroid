@@ -27,6 +27,7 @@ public class QpidroidProcess extends Service {
         msgHandler = new FromClientHandler();
         toMe = new Messenger(msgHandler);
         toClient = null;
+        mgr = null;
     }
 
     /*
@@ -56,6 +57,8 @@ public class QpidroidProcess extends Service {
         //System.out.println("Service: onStartCommand");
         doToast("Service: onStartCommand");
         //START LISTENING
+        if(businessConnected())
+            stopBusinessListener();
         initBusinessListener();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -109,6 +112,11 @@ public class QpidroidProcess extends Service {
     }
 
 
+    private boolean businessConnected()
+    {
+        return mgr != null;
+    };
+    private QPIDManager mgr;
     //
     private void doToast(String msg)
     {
